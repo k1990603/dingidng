@@ -31,6 +31,10 @@ import './assets/icons' // icon
 import './router/index' // permission control
 import 'echarts-gl'
 
+// import Vconsole from 'vconsole'
+// const vConsole = new Vconsole()
+// Vue.use(vConsole)
+
 Vue.use(checkPer)
 Vue.use(VueHighlightJS)
 Vue.use(mavonEditor)

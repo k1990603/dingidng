@@ -17,21 +17,24 @@
       <el-table-column prop="deptName" align="center" label="考核人">
         <template slot-scope="scope">
           <a href="javascript:;" class="detailColor" @click="detailVisibleShow(scope)">{{ scope.row.username }}({{ scope.row.deptName }})</a>
-
         </template>
       </el-table-column>
-      <!-- <el-table-column prop="username" align="center" label="考核人" /> -->
-      <el-table-column prop="isKpi" align="center" label="是否参加考核">
+      <el-table-column prop="kpiCreateName" align="center" label="KPI标题" />
+      <el-table-column prop="isKpi" align="center" label="考核状态">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.isKpi?'success':'warning'">{{ scope.row.isKpi ? "是" : "否" }}</el-tag>
-          <!-- <span>{{ scope.row.isKpi ? "是" : "否" }}</span> -->
+          <!-- <el-tag :type="scope.row.isKpi?'success':'warning'">{{ scope.row.isKpi ? "是" : "否" }}</el-tag> -->
+          <el-tag v-if="scope.row.status==0" type="info">未开始</el-tag>
+          <el-tag v-if="scope.row.status==1" type="danger">进行中</el-tag>
+          <el-tag v-if="scope.row.status==2" type="success">已结束</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="totalScore" align="center" label="总分" />
+      <!-- <el-table-column prop="assessmentContent" align="center" label="考核内容"/> -->
+      <el-table-column prop="jsFs" align="center" label="绩效分数" />
+      <el-table-column prop="jsLevel" align="center" label="绩效等级" />
+      <el-table-column prop="jsxs" align="center" label="绩效系数" />
       <el-table-column prop="createTime" align="center" label="创建日期" />
       <!--   编辑与删除   -->
       <el-table-column
-        v-if="checkPer(['admin', 'template:edit', 'template:del'])"
         label="操作"
         width="130px"
         align="center"
@@ -52,7 +55,7 @@
 </template>
 
 <script>
-import crudTemplate from '@/api/kpi/template'
+import crudTemplate from '@/api/kpi/performance'
 // import { getDepts } from '@/api/kpi/other'
 import eHeader from './module/header'
 import eForm from './module/form'
@@ -67,7 +70,7 @@ export default {
   cruds() {
     return CRUD({
       title: 'kpi模板',
-      url: 'ding/kpi/getModels',
+      url: 'ding/kpi/create/detail',
       // sort: ['jobSort,asc', 'id,desc'],
       crudMethod: { ...crudTemplate }
     })
@@ -78,11 +81,11 @@ export default {
       detailVisible: false,
       detailId: null,
       permission: {
-        add: ['admin', 'template:add'],
-        edit: ['admin', 'template:edit'],
-        del: ['admin', 'template:del']
+        edit: ['admin', 'exame:edit'],
+        del: ['admin', 'exame:del']
       },
       depts: [],
+      titleList: [],
       normalizer(node) {
         return {
           id: node.id,
@@ -91,6 +94,10 @@ export default {
         }
       }
     }
+  },
+  created() {
+    // let id = this.$route.query.id;
+    // this.crud.params.kpiCreateId = id
   },
   mounted() {
     this.getdept()
@@ -109,35 +116,33 @@ export default {
     [CRUD.HOOK.afterToCU](crud, form) {
       if (crud.form.id) {
         this.getDetail(crud.form.id)
-      } else {
-        // let obj = {
-        // num: 1,
-        // indicatorsName: "",
-        // dictDetailId: null,
-        // assessmentContent: "",
-        // targetValue: null,
-        // weight: null,
-        // deptId: null,
-        // userId: null,
-        // isDesc: false,
-        // isFj: false,
-        // userList: []
-        // }
-        // this.$set(this.crud.form, 'detailReqParams', obj)
       }
+    },
+    [CRUD.HOOK.beforeRefresh](crud, form) {
+      // let id = this.$route.query.id;
+      // this.crud.params.kpiCreateId = id
+      // this.getTitleAction(crud)
+    },
+    getTitleAction(crud) {
+      const id = this.$route.query.id
+      const params = {
+        page: 0,
+        size: 10000000
+      }
+      console.log(this.crud, 'crud')
+      crudTemplate.getTitle(params)
+        .then((res) => {
+          this.titleList = res.content
+          this.crud.page.kpiCreateId = id
+        })
+        .catch(() => {})
     },
     getDetail(id) {
       crudTemplate.detailTable(id).then((res) => {
-        res.kpiDetailDtos.forEach((item, index) => {
+        res.itemDtos.forEach((item, index) => {
           item.num = index + 1
         })
-        // this.$nextTick(() => {
-        this.$set(this.crud.form, 'detailReqParams', res.kpiDetailDtos)
-        // })
-        // this.crud.form.detailReqParams.forEach(item => {
-        //   this.$set(item,'userList',item.userList)
-        // })
-        // console.log(this.crud.form)
+        this.$set(this.crud.form, 'itemDtos', res.itemDtos)
       })
         .catch(() => {})
     },
@@ -147,48 +152,10 @@ export default {
         .getDepts()
         .then((res) => {
           this.depts = res
-          // document.write(JSON.stringify(this.depts))
+          console.log(this.depts, 'depts')
         })
         .catch(() => {})
     }
-    // toEdit() {
-    //   console.log(1111111)
-    // },
-    // 改变状态
-    // changeEnabled(data, val) {
-    //   this.$confirm(
-    //     '此操作将 "' +
-    //       this.dict.label.job_status[val] +
-    //       '" ' +
-    //       data.name +
-    //       "岗位, 是否继续？",
-    //     "提示",
-    //     {
-    //       confirmButtonText: "确定",
-    //       cancelButtonText: "取消",
-    //       type: "warning",
-    //     }
-    //   )
-    //     .then(() => {
-    //       // eslint-disable-next-line no-undef
-    //       crudTemplate
-    //         .edit(data)
-    //         .then(() => {
-    //           // eslint-disable-next-line no-undef
-    //           this.crud.notify(
-    //             this.dict.label.job_status[val] + "成功",
-    //             "success"
-    //           );
-    //         })
-    //         .catch((err) => {
-    //           data.enabled = !data.enabled;
-    //           console.log(err.data.message);
-    //         });
-    //     })
-    //     .catch(() => {
-    //       data.enabled = !data.enabled;
-    //     });
-    // },
   }
 }
 </script>

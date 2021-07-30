@@ -2,7 +2,7 @@
   <div class="login" :style="'background-image:url('+ Background +');'">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-position="left" label-width="0px" class="login-form">
       <h3 class="title">
-        EL-ADMIN 后台管理系统
+        绩效考核系统
       </h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
@@ -48,7 +48,7 @@ import { getCodeImg, authLOgin } from '@/api/login'
 import Cookies from 'js-cookie'
 import qs from 'qs'
 import Background from '@/assets/images/background.jpg'
-import * as dd from 'dingtalk-jsapi';
+import * as dd from 'dingtalk-jsapi'
 export default {
   name: 'Login',
   data() {
@@ -95,32 +95,34 @@ export default {
     // token 过期提示
     this.point()
   },
-  mounted () {
+  mounted() {
     // this.authAction()
-    let that = this
-    if (dd.env.platform !== "notInDingTalk") {
-    dd.ready(function() {
-    dd.runtime.permission.requestAuthCode({
-        corpId: 'ding5d41004cbdfdb2cbee0f45d8e4f7c288', // 企业id
-        onSuccess: function (info) {
-          let code = info.code // 通过该免登授权码可以获取用户身份
-          that.authAction(code)
-        },onFail: (err) => {
-          alert('fail');
-          alert(JSON.stringify(err));
-        }});
-});
+    const that = this
+    if (dd.env.platform !== 'notInDingTalk') {
+      dd.ready(function() {
+        dd.runtime.permission.requestAuthCode({
+          corpId: 'ding464a71f2ff7864e135c2f4657eb6378f', // 企业id
+          onSuccess: function(info) {
+            const code = info.code // 通过该免登授权码可以获取用户身份
+            that.authAction(code)
+          }, onFail: (err) => {
+            alert('fail')
+            alert(JSON.stringify(err))
+          } })
+      })
     }
   },
   methods: {
     authAction(code) {
-      let data = { code: code }
-      // let data = { code: '953b3b1556d030e9a004b362d6d16f79' }
+      const data = { code: code }
+      // let data = { code: '11065f3d211d36689faeca615724c214' }
+      // console.log(code, JSON.stringify(code))
       authLOgin(data).then(res => {
-        this.$store.dispatch('authLogin', res.data).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-          }).catch(() => {
-          })
+        console.log(res, JSON.stringify(res))
+        this.$store.dispatch('authLogin', res).then(() => {
+          this.$router.push({ path: this.redirect || '/' })
+        }).catch(() => {
+        })
       })
     },
     getCode() {

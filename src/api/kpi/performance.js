@@ -2,7 +2,25 @@ import request from '@/utils/request'
 
 export function getDepts(params) {
   return request({
-    url: 'api/dept',
+    url: 'ding/kpi/getDepts',
+    method: 'get',
+    params
+  })
+}
+
+// 详情
+export function detailTable(kpiId, params) {
+  return request({
+    url: 'ding/kpi/create/detail/item/' + kpiId,
+    method: 'get',
+    params
+  })
+}
+
+// kpi标题
+export function getTitle(params) {
+  return request({
+    url: 'ding/kpi/create/page',
     method: 'get',
     params
   })
@@ -35,7 +53,7 @@ export function del(ids) {
 
 export function edit(data) {
   return request({
-    url: 'ding/kpi/create',
+    url: '/ding/kpi/create/detail/item',
     method: 'put',
     data
   })
@@ -49,20 +67,4 @@ export function synch(data) {
   })
 }
 
-// 生效
-export function toAction(id) {
-  return request({
-    url: 'ding/kpi/create/openStatus/' + id,
-    method: 'put'
-  })
-}
-
-// 失效
-export function toClose(id) {
-  return request({
-    url: 'ding/kpi/create/closeStatus/' + id,
-    method: 'put'
-  })
-}
-
-export default { add, edit, del, getDepts, getDeptSuperior, synch, toAction, toClose }
+export default { add, edit, del, getDepts, getDeptSuperior, synch, getTitle, detailTable }

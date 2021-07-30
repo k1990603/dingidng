@@ -15,27 +15,22 @@
       label-width="80px"
     >
       <el-form-item
-        label="名称"
-        prop="name"
+        label="标题"
+        prop="title"
+        placeholder="请输入标题"
       >
         <el-input
-          v-model="form.name"
+          v-model="form.title"
           style="width: 370px;"
         />
       </el-form-item>
       <el-form-item
-        label="排序"
-        prop="jobSort"
+        label="时间"
+        prop="times"
       >
-        <el-input-number
-          v-model.number="form.jobSort"
-          :min="0"
-          :max="999"
-          controls-position="right"
-          style="width: 370px;"
-        />
+        <date-range-picker v-model="form.times" class="date-item" @change="timeChange" />
       </el-form-item>
-      <el-form-item
+      <!-- <el-form-item
         v-if="form.pid !== 0"
         label="状态"
         prop="enabled"
@@ -48,7 +43,7 @@
         >
           {{ item.label }}
         </el-radio>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <div
       slot="footer"
@@ -73,31 +68,45 @@
 
 <script>
 import { form } from '@crud/crud'
+import DateRangePicker from '@/components/DateRangePicker'
 
 const defaultForm = {
   id: null,
-  name: '',
-  jobSort: 999,
-  enabled: true
+  title: '',
+  startTime: null,
+  endTime: null,
+  times: []
+  // jobSort: 999,
+  // enabled: true
 }
 export default {
+  components: { DateRangePicker },
   mixins: [form(defaultForm)],
-  props: {
-    jobStatus: {
-      type: Array,
-      required: true
-    }
-  },
+  // props: {
+  //   jobStatus: {
+  //     type: Array,
+  //     required: true
+  //   }
+  // },
   data() {
     return {
       rules: {
-        name: [
+        title: [
           { required: true, message: '请输入名称', trigger: 'blur' }
-        ],
-        jobSort: [
-          { required: true, message: '请输入序号', trigger: 'blur', type: 'number' }
         ]
       }
+    }
+  },
+  methods: {
+    timeChange(value) {
+      if (value) {
+        this.form.startTime = value[0]
+        this.form.endTime = value[1]
+      } else {
+        this.form.startTime = null
+        this.form.endTime = null
+      }
+      // console.log(value, 111111, this.form)
     }
   }
 }

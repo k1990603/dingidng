@@ -209,7 +209,6 @@ import { getDeptId } from '@/api/kpi/template'
 import { getDepts } from '@/api/system/dept'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-// import { LOAD_CHILDREN_OPTIONS } from '@riophae/vue-treeselect'
 import crudTemplate from '@/api/kpi/template'
 
 export default {
@@ -239,12 +238,6 @@ export default {
         userId: null,
         weight: []
       },
-      dictDetailList: [
-        { label: '基础指标', value: '0' },
-        { label: '重点指标', value: '1' },
-        { label: '加分项', value: '2' },
-        { label: '扣分项', value: '3' }
-      ],
       sizePercent: '80%',
       normalizer(node) {
         return {
@@ -259,6 +252,12 @@ export default {
       assessmentStatus: [
         { label: '参与考核', value: true },
         { label: '不参与考核', value: false }
+      ],
+      dictDetailList: [
+        { label: '基础指标', value: '0' },
+        { label: '重点指标', value: '1' },
+        { label: '加分项', value: '2' },
+        { label: '扣分项', value: '3' }
       ],
       selections: [],
       rules: {
